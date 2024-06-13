@@ -28,9 +28,9 @@ resource "azurerm_key_vault_access_policy" "keyvaultpolicypecarmo" {
     object_id = "bffd9bac-f216-407d-9dac-e328b3944ef0"
 
     secret_permissions = [
-        "get",
-        "list",
-        "set",
-        "delete",
+        "Get",
+        "List",
+        "Set",
+        "Delete",
     ] 
 }
