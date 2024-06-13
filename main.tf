@@ -69,11 +69,13 @@ resource "azurerm_kubernetes_cluster" "aks" {
 
     identity {
         type = "UserAssigned"
+        identity_ids = [ azurerm_user_assigned_identity.identity.id ]
     }
 
     kubelet_identity {
         client_id = azurerm_user_assigned_identity.identity.client_id
         object_id = azurerm_user_assigned_identity.identity.principal_id
+        user_assigned_identity_id = azurerm_user_assigned_identity.identity.id
     }
 }
 
