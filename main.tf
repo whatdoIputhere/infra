@@ -38,3 +38,4 @@ resource "azurerm_kubernetes_cluster" "aks" {
         client_secret = data.azurerm_client_config.current.client_secret
     }
 }
+data "azurerm_client_config" "current" {}
