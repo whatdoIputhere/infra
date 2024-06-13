@@ -54,7 +54,7 @@ resource "azurerm_kubernetes_cluster" "aks" {
     location            = azurerm_resource_group.rg.location
     resource_group_name = azurerm_resource_group.rg.name
     dns_prefix          = "pecarmoaks"
-    kubernetes_version  = "1.19.7"
+    kubernetes_version  = "1.27"
 
     default_node_pool {
         name       = "default"
