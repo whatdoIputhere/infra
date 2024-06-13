@@ -34,3 +34,36 @@ resource "azurerm_key_vault_access_policy" "keyvaultpolicypecarmo" {
         "Delete",
     ] 
 }
+
+resource "azurerm_kubernetes_cluster" "aks" {
+    name                = "pecarmoaks"
+    location            = azurerm_resource_group.rg.location
+    resource_group_name = azurerm_resource_group.rg.name
+    dns_prefix          = "pecarmoaks"
+    kubernetes_version  = "1.19.7"
+
+    default_node_pool {
+        name       = "default"
+        node_count = 1
+        vm_size    = "Standard_DS2_v2"
+    }
+
+    network_profile {
+        network_plugin = "azure"
+    }
+
+    service_principal {
+        client_id     = data.azurerm_key_vault_secret.appid.value
+        client_secret = data.azurerm_key_vault_secret.secret.value
+    }
+}
+
+data "azurerm_key_vault_secret" "appid" {
+    name         = "aksauth-appid"
+    key_vault_id = azurerm_key_vault.keyvault.id
+}
+
+data "azurerm_key_vault_secret" "secret" {
+    name         = "aksauth-secret"
+    key_vault_id = azurerm_key_vault.keyvault.id
+}
