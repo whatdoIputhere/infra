@@ -55,6 +55,12 @@ resource "azurerm_user_assigned_identity" "identity" {
     name                = "aksidentity"
 }
 
+resource "azurerm_role_assignment" "managed_identity_operator" {
+    scope                = azurerm_user_assigned_identity.identity.id
+    role_definition_name = "Managed Identity Operator"
+    principal_id         = azurerm_user_assigned_identity.identity.principal_id
+}
+
 resource "azurerm_kubernetes_cluster" "aks" {
     name                = "pecarmoaks"
     location            = azurerm_resource_group.rg.location
