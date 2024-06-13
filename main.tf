@@ -49,12 +49,17 @@ resource "azurerm_key_vault_access_policy" "keyvaultpolicygithubauth" {
     ] 
 }
 
+resource "azurerm_user_assigned_identity" "identity" {
+    resource_group_name = azurerm_resource_group.rg.name
+    location            = azurerm_resource_group.rg.location
+    name                = "aksidentity"
+}
+
 resource "azurerm_kubernetes_cluster" "aks" {
     name                = "pecarmoaks"
     location            = azurerm_resource_group.rg.location
     resource_group_name = azurerm_resource_group.rg.name
     dns_prefix          = "pecarmoaks"
-    kubernetes_version  = "1.27"
 
     default_node_pool {
         name       = "default"
@@ -62,22 +67,21 @@ resource "azurerm_kubernetes_cluster" "aks" {
         vm_size    = "Standard_DS2_v2"
     }
 
-    network_profile {
-        network_plugin = "azure"
+    identity {
+        type = "UserAssigned"
     }
 
-    service_principal {
-        client_id     = data.azurerm_key_vault_secret.appid.value
-        client_secret = data.azurerm_key_vault_secret.secret.value
+    kubelet_identity {
+        client_id = azurerm_user_assigned_identity.identity.client_id
+        object_id = azurerm_user_assigned_identity.identity.principal_id
     }
 }
 
-data "azurerm_key_vault_secret" "appid" {
-    name         = "aksauth-appid"
-    key_vault_id = azurerm_key_vault.keyvault.id
-}
+data "azurerm_subscription" "current" {}
 
-data "azurerm_key_vault_secret" "secret" {
-    name         = "aksauth-secret"
-    key_vault_id = azurerm_key_vault.keyvault.id
+resource "azurerm_role_assignment" "acr_pull" {
+    scope                = azurerm_container_registry.registry.id
+    role_definition_name = "AcrPull"
+    principal_id         = azurerm_kubernetes_cluster.aks.kubelet_identity.0.object_id
+    skip_service_principal_aad_check = true
 }
