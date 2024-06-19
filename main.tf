@@ -19,34 +19,13 @@ resource "azurerm_key_vault" "keyvault" {
     location            = azurerm_resource_group.rg.location
     tenant_id = data.azurerm_client_config.current.tenant_id
     sku_name            = "standard"
+    enable_rbac_authorization = true
 }
 
-resource "azurerm_key_vault_access_policy" "keyvaultpolicypecarmo" {
-    key_vault_id = azurerm_key_vault.keyvault.id
-
-    tenant_id = data.azurerm_client_config.current.tenant_id
-    object_id = "bffd9bac-f216-407d-9dac-e328b3944ef0"
-
-    secret_permissions = [
-        "Get",
-        "List",
-        "Set",
-        "Delete",
-    ] 
-}
-
-resource "azurerm_key_vault_access_policy" "keyvaultpolicygithubauth" {
-    key_vault_id = azurerm_key_vault.keyvault.id
-
-    tenant_id = data.azurerm_client_config.current.tenant_id
-    object_id = data.azurerm_client_config.current.object_id
-
-    secret_permissions = [
-        "Get",
-        "List",
-        "Set",
-        "Delete",
-    ] 
+resource "azurerm_role_assignment" "keyvault_secrets_officer" {
+    scope                = azurerm_key_vault.keyvault.id
+    role_definition_name = "Key Vault Secrets Officer"
+    principal_id         = data.azurerm_client_config.current.object_id
 }
 
 resource "azurerm_user_assigned_identity" "identity" {
