@@ -22,10 +22,16 @@ resource "azurerm_key_vault" "keyvault" {
     enable_rbac_authorization = true
 }
 
-resource "azurerm_role_assignment" "keyvault_secrets_officer" {
+resource "azurerm_role_assignment" "keyvault_secrets_officer_gitauth" {
     scope                = azurerm_key_vault.keyvault.id
     role_definition_name = "Key Vault Secrets Officer"
     principal_id         = data.azurerm_client_config.current.object_id
+}
+
+resource "azurerm_role_assignment" "keyvault_secrets_officer_pecarmo" {
+    scope                = azurerm_key_vault.keyvault.id
+    role_definition_name = "Key Vault Secrets Officer"
+    principal_id         = "bffd9bac-f216-407d-9dac-e328b3944ef0"
 }
 
 resource "azurerm_user_assigned_identity" "identity" {
