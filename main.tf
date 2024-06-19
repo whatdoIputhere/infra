@@ -45,7 +45,7 @@ resource "azurerm_kubernetes_cluster" "aks" {
     location            = azurerm_resource_group.rg.location
     resource_group_name = azurerm_resource_group.rg.name
     dns_prefix          = "pecarmoaks"
-    depends_on = [ managed_identity_operator ]
+    depends_on = [ azurerm_role_assignment.managed_identity_operator ]
 
     default_node_pool {
         name       = "default"
