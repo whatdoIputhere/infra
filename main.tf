@@ -63,6 +63,8 @@ resource "azurerm_kubernetes_cluster" "aks" {
             max_surge                     = "10%"
             node_soak_duration_in_minutes = 0
         }
+
+        temporary_name_for_rotation = "temp"
     }
 
     identity {
