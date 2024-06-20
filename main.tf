@@ -57,6 +57,8 @@ resource "azurerm_kubernetes_cluster" "aks" {
         name       = "default"
         node_count = 1
         vm_size    = "Standard_B2ms"
+        os_sku = "Ubuntu"
+        os_disk_size_gb = "16"
 
         upgrade_settings {
             drain_timeout_in_minutes      = 0
