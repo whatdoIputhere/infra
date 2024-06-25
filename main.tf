@@ -110,14 +110,14 @@ resource "azurerm_cosmosdb_account" "cosmosdbaccount" {
 }
 
 resource "azurerm_cosmosdb_mongo_database" "mongodb" {
-    name                = "pecarmomongodb"
+    name                = "pecarmodb"
     resource_group_name = azurerm_resource_group.rg.name
     account_name        = azurerm_cosmosdb_account.cosmosdbaccount.name
-    throughput = 400
+    throughput = 1000
 }
 
 resource "azurerm_cosmosdb_mongo_collection" "mongocollection" {
-    name                = "pecarmomongocollection"
+    name                = "notifications"
     resource_group_name = azurerm_resource_group.rg.name
     account_name        = azurerm_cosmosdb_account.cosmosdbaccount.name
     database_name       = azurerm_cosmosdb_mongo_database.mongodb.name
