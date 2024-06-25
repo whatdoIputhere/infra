@@ -96,6 +96,7 @@ resource "azurerm_cosmosdb_account" "cosmosdbaccount" {
     location            = azurerm_resource_group.rg.location
     offer_type          = "Standard"
     kind                = "MongoDB"
+    mongo_server_version = "4.2"
     free_tier_enabled = true
     consistency_policy {
         consistency_level = "Session"
@@ -121,7 +122,7 @@ resource "azurerm_cosmosdb_mongo_collection" "mongocollection" {
     account_name        = azurerm_cosmosdb_account.cosmosdbaccount.name
     database_name       = azurerm_cosmosdb_mongo_database.mongodb.name
     index {
-    keys   = ["_id"]
-    unique = true
+        keys   = ["_id"]
+        unique = true
     }
 }
