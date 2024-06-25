@@ -107,6 +107,9 @@ resource "azurerm_cosmosdb_account" "cosmosdbaccount" {
     }
 
     public_network_access_enabled = true
+    capacity {
+      total_throughput_limit = 1000
+    }
 }
 
 resource "azurerm_cosmosdb_mongo_database" "mongodb" {
