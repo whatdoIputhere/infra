@@ -120,4 +120,8 @@ resource "azurerm_cosmosdb_mongo_collection" "mongocollection" {
     resource_group_name = azurerm_resource_group.rg.name
     account_name        = azurerm_cosmosdb_account.cosmosdbaccount.name
     database_name       = azurerm_cosmosdb_mongo_database.mongodb.name
+    index {
+    keys   = ["_id"]
+    unique = true
+    }
 }
