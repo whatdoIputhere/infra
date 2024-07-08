@@ -13,6 +13,7 @@ env:
 
 jobs:
     terraform:
+        name: Apply Terraform config
         runs-on: ubuntu-latest
 
         steps:
@@ -27,3 +28,33 @@ jobs:
 
             - name: Terraform Apply
               run: terraform apply -auto-approve
+            
+    apply-deployment:
+        name: Apply external-dns deployment
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
+
+            - name: Login to Azure
+              uses: azure/login@v2
+              with:
+                  creds: |
+                    {
+                      "clientId": "${{ secrets.AZURE_CLIENT_ID }}",
+                      "clientSecret": "${{ secrets.AZURE_CLIENT_SECRET }}",
+                      "subscriptionId": "${{ secrets.AZURE_SUBSCRIPTION_ID }}",
+                      "tenantId": "${{ secrets.AZURE_TENANT_ID }}"
+                    }
+            
+            - name: Apply deployment
+              run: |
+                CLOUDFLARE_API_TOKEN=$(az keyvault secret show --name "cloudflare-api-token" --vault-name "pecarmokeyvault" --query "value" -o tsv)
+                CLOUDFLARE_API_TOKEN_ENCODED=$(echo -n "${CLOUDFLARE_API_TOKEN}" | base64 -w 0)
+                sed -i "s#CLOUDFLARE_API_TOKEN_SECRET_VALUE#${CLOUDFLARE_API_TOKEN_ENCODED}#g" external-dns-deployment.yaml
+
+                az aks get-credentials --resource-group infra-rg-neu --name pecarmoaks
+                
+                kubectl apply -f external-dns-deployment.yaml
+                kubectl rollout restart deployment/external-dns
