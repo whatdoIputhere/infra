@@ -1,9 +1,9 @@
 name: Apply Infrastructure
 
 on:
-    push:
-        branches:
-            - main
+  push:
+    branches: 
+      - main
 
 env:
     ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
@@ -28,22 +28,23 @@ jobs:
 
             - name: Terraform Apply
               run: terraform apply -auto-approve
-            
+
     apply-deployment:
+        needs: terraform
         name: Apply external-dns deployment
         runs-on: ubuntu-latest
 
         steps:
             - name: Checkout code
               uses: actions/checkout@v4
-            
+
             - name: Apply deployment
               run: |
-                CLOUDFLARE_API_TOKEN=${{ secrets.AZURE_TENANT_ID }}
-                CLOUDFLARE_API_TOKEN_ENCODED=$(echo -n "${CLOUDFLARE_API_TOKEN}" | base64 -w 0)
-                sed -i "s#CLOUDFLARE_API_TOKEN_SECRET_VALUE#${CLOUDFLARE_API_TOKEN_ENCODED}#g" external-dns-deployment.yaml
+                  CLOUDFLARE_API_TOKEN=${{ secrets.CLOUDFLARE_API_TOKEN }}
+                  CLOUDFLARE_API_TOKEN_ENCODED=$(echo -n "${CLOUDFLARE_API_TOKEN}" | base64 -w 0)
+                  sed -i "s#CLOUDFLARE_API_TOKEN_SECRET_VALUE#${CLOUDFLARE_API_TOKEN_ENCODED}#g" external-dns-deployment.yaml
 
-                az aks get-credentials --resource-group infra-rg-neu --name pecarmoaks
-                
-                kubectl apply -f external-dns-deployment.yaml
-                kubectl rollout restart deployment/external-dns
+                  az aks get-credentials --resource-group infra-rg-neu --name pecarmoaks
+
+                  kubectl apply -f external-dns-deployment.yaml
+                  kubectl rollout restart deployment/external-dns
