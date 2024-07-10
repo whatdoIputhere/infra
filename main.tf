@@ -52,7 +52,7 @@ resource "azurerm_kubernetes_cluster" "aks" {
     resource_group_name = azurerm_resource_group.rg.name
     dns_prefix          = "pecarmoaks"
     depends_on = [ azurerm_role_assignment.managed_identity_operator ]
-
+    
     default_node_pool {
         name       = "default"
         node_count = 1
